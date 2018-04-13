@@ -1,0 +1,1 @@
+subst O: %~dp0\O

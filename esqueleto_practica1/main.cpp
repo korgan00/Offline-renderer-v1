@@ -34,7 +34,11 @@ World* ReadFromFile(const char* filename)
     }
     return world;
 }
+/*
+Spectrum traceRay() {
 
+}
+*/
 void render_image(World* world, unsigned int dimX, unsigned int dimY, float* image, float* alpha)
 {
 	#define im(x,y,s) image[(y * dimX + x) * 3] = s[0];\
@@ -62,7 +66,8 @@ void render_image(World* world, unsigned int dimX, unsigned int dimY, float* ima
 				float diffSum = 0.0f, specSum = 0.0f;
 
 				std::vector<Light*>::iterator lightIt = world->mLights.begin();
-				//float ambient = world->mAmbientLight->mIntensity * mat->Ka;
+				float ambient = 0.01f * mat->Ka;
+				Spectrum ambientContribution(ambient, ambient, ambient);
 				
 				while (lightIt != world->mLights.end()) {
 					PointLight* currLight = (PointLight*)*lightIt;
@@ -86,7 +91,7 @@ void render_image(World* world, unsigned int dimX, unsigned int dimY, float* ima
 					lightIt++;
 				}
 
-				finalColor = mat->Kd.GetColor(info) * diffSum + mat->Ks.GetColor(info) * specSum;
+				finalColor = ambientContribution + mat->Kd.GetColor(info) * diffSum + mat->Ks.GetColor(info) * specSum;
 
 			}
 
