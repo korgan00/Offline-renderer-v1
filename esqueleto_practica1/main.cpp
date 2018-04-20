@@ -34,10 +34,52 @@ World* ReadFromFile(const char* filename)
     }
     return world;
 }
+gmtl::Vec3f refractedDirection(float ni, float nt, const gmtl::Vec3f& V, const gmtl::Vec3f& N)
+{
+	gmtl::Vec3f T;
+	float eta;
+
+	eta = ni / nt;
+	float c1 = -dot(V, N);
+	float c2_op = 1.0f - eta * eta*(1.0f - c1 * c1);
+	if (c2_op < 0.0f)
+		return gmtl::Vec3f(0.0f);
+
+	float c2 = sqrt(c2_op);
+	T = eta * V + (eta*c1 - c2)*N;
+
+	return T;
+}
+
+gmtl::Vec3f transmittedDirection(bool& entering, const gmtl::Vec3f& N, const gmtl::Vec3f& V, const Standard* mat)
+{
+	gmtl::Vec3f normal_refraction = N;
+	bool exitingObject = dot(N, -V) < 0.0f;
+	float ni = 0.0f;
+	float nt = 0.0f;
+
+	if (exitingObject)
+	{
+		ni = mat->refractionIndex;
+		nt = 1.0003f; // air refraction index
+		normal_refraction = -normal_refraction;
+	}
+	else
+	{
+		ni = 1.0003f; // air refraction index
+		nt = mat->refractionIndex;
+	}
+
+	gmtl::Vec3f T = refractedDirection(ni, nt, V, normal_refraction);
+
+	entering = !exitingObject;
+	return T;
+}
+
 
 Spectrum traceRay(World* world, gmtl::Rayf currRay, int callDepth = 0) {
 	Spectrum finalColor;
-	if (callDepth >= 2) return finalColor;
+	if (callDepth >= 5) return finalColor;
 	callDepth++;
 
 	IntersectInfo info;
@@ -76,40 +118,15 @@ Spectrum traceRay(World* world, gmtl::Rayf currRay, int callDepth = 0) {
 			lightIt++;
 		}
 
+
 		Vector3f v_r;
 		v_r = -gmtl::reflect(v_r, v, n);
 		Spectrum reflection = traceRay(world, gmtl::Rayf(collisionPoint + v_r * 0.01f, v_r), callDepth);
 
 
-
-		float refrRed = mat->Kt.GetColor(info)[0];
-		float eta_mat1;
-		float eta_mat2;
-		Vector3f n_refr;
-		Vector3f v_refr = v;
-		float c1 = gmtl::dot(v_refr, n);
-
-		if (c1 < 0) {
-			eta_mat1 = mat->refractionIndex;
-			eta_mat2 = 1.0002f;
-			n_refr = -n;
-		} else {
-			eta_mat1 = 1.0002f;
-			eta_mat2 = mat->refractionIndex;
-			n_refr = n;
-		}
-
-		c1 = gmtl::dot(v_refr, n_refr);
-		float eta = eta_mat1 / eta_mat2;
-		float sub_c2 = eta * eta * (1 - c1 * c1);
-
-		Spectrum refraction;
-		if (sub_c2 < 1) {
-			float c2 = sqrt(1 - sub_c2);
-			Vector3f v_t;
-			v_t = eta * v_refr + (eta * c1 - c2) * n_refr;
-			refraction = traceRay(world, gmtl::Rayf(collisionPoint + v_t * 0.01f, v_t), callDepth);
-		}
+		bool entering;
+		Vector3f T = transmittedDirection(entering, info.normal, info.ray.getDir(), mat);
+		Spectrum refraction = traceRay(world, gmtl::Rayf(collisionPoint + T * 0.01f, T), callDepth);
 
 		finalColor = mat->Ka_color.GetColor(info) * mat->Ka * 0.01f +
 					 mat->Kd.GetColor(info) * diffSum +
@@ -125,23 +142,26 @@ Spectrum traceRay(World* world, gmtl::Rayf currRay, int callDepth = 0) {
 
 void render_image(World* world, unsigned int dimX, unsigned int dimY, float* image, float* alpha)
 {
-	#define im(x,y,s) image[(y * dimX + x) * 3] = s[0];\
+	#define im(x,y,s,a) image[(y * dimX + x) * 3] = s[0];\
 						  image[(y * dimX + x) * 3 + 1] = s[1];\
-						  image[(y * dimX + x) * 3 + 2] = s[2];
-	#define al(x,y,a) alpha[y * dimX + x] = a;
+						  image[(y * dimX + x) * 3 + 2] = s[2];\
+						  alpha[y * dimX + x] = a;
 
 	Camera* c = world->getCamera();
-	gmtl::Rayf currRay;
 
-	for (unsigned int j = 0; j < dimY; j++) {
+	unsigned int accum = 0;
+	#pragma omp parallel for schedule(dynamic)
+	for (int j = 0; j < (int)dimY; j++) {
+		gmtl::Rayf currRay;
 		for (unsigned int i = 0; i < dimX; i++) {
 			currRay = c->generateRay(static_cast<float>(i), static_cast<float>(j));
 			Spectrum finalColor = traceRay(world, currRay);
-			
-			im(i, j, finalColor);
-			al(i, j, 1.0f);
+			#pragma omp critical 
+			{ im(i, j, finalColor, 1.0f); }
 		}
-		printf("\r %f", (float)j / dimY);
+		#pragma omp critical
+		{ accum++; }
+		printf("\r %f", (float)accum / dimY);
 	}
 }
 

@@ -62,6 +62,8 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;GOOGLE_GLOG_DLL_DECL=;GLOG_NO_ABBREVIATED_SEVERITIES;NOMINMAX;PATHTRACER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>../rendering_lib/include/gmtl;./;../rendering_lib/include;./lights;./brdfs;../rendering_lib/include/glog</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
