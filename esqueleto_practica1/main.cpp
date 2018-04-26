@@ -34,6 +34,7 @@ World* ReadFromFile(const char* filename)
     }
     return world;
 }
+
 gmtl::Vec3f refractedDirection(float ni, float nt, const gmtl::Vec3f& V, const gmtl::Vec3f& N)
 {
 	gmtl::Vec3f T;
@@ -76,6 +77,31 @@ gmtl::Vec3f transmittedDirection(bool& entering, const gmtl::Vec3f& N, const gmt
 	return T;
 }
 
+Spectrum directLight(World* world, const Point3f& collisionPoint, const Vector3f& v, const IntersectInfo& info) {
+	std::vector<Light*>::iterator lightIt = world->mLights.begin();
+
+	Spectrum directContribution;
+	while (lightIt != world->mLights.end()) {
+		Light* currLight = (*lightIt);
+		gmtl::Vec3f wi;
+		float pdf;
+		gmtl::Rayf visibilityRay;
+		IntersectInfo shadowInfo;
+		Vector3f n = info.normal;
+		gmtl::normalize(n);
+
+		Spectrum lightSpectrum = currLight->Sample(collisionPoint, wi, pdf, visibilityRay);
+		visibilityRay.setOrigin(visibilityRay.getOrigin() + visibilityRay.getDir() * 0.001f);
+
+		if (!world->shadow(visibilityRay)) {
+			directContribution += (info.material->BRDF(lightSpectrum, wi, v, info) * max(gmtl::dot(n, wi), 0.0f)) / pdf;
+		}
+
+		lightIt++;
+	}
+
+	return directContribution;
+}
 
 Spectrum traceRay(World* world, gmtl::Rayf currRay, int callDepth = 0) {
 	Spectrum finalColor;
@@ -86,54 +112,12 @@ Spectrum traceRay(World* world, gmtl::Rayf currRay, int callDepth = 0) {
 	world->intersect(info, currRay);
 	if (info.objectID != InvalidObjectID) {
 		Point3f collisionPoint = info.position;
-		Vector3f v = -currRay.getDir();
+		Vector3f v = currRay.getDir();
 		gmtl::normalize(v);
 		Vector3f n = info.normal;
 		gmtl::normalize(n);
-
-		Standard* mat = ((Standard*)info.material);
-		float diffSum = 0.0f, specSum = 0.0f;
-
-		std::vector<Light*>::iterator lightIt = world->mLights.begin();
-
-		while (lightIt != world->mLights.end()) {
-			PointLight* currLight = (PointLight*)*lightIt;
-			Vector3f l = currLight->getWorldPosition() - collisionPoint;
-			float sqrDist = gmtl::lengthSquared(l);
-			gmtl::normalize(l);
-
-			IntersectInfo shadowInfo;
-			world->intersect(shadowInfo, gmtl::Rayf(collisionPoint + l * 0.01f, l, sqrt(sqrDist)));
-
-			if (shadowInfo.objectID == InvalidObjectID) {
-				Vector3f r;
-				float intensity = currLight->mIntensity / sqrDist;
-				r = -gmtl::reflect(r, l, n);
-				gmtl::normalize(r);
-
-				diffSum += intensity * max(gmtl::dot(n, l), 0.0f);
-				specSum += intensity * pow(max(gmtl::dot(r, v), 0.0f), mat->Kshi);
-			}
-
-			lightIt++;
-		}
-
-
-		Vector3f v_r;
-		v_r = -gmtl::reflect(v_r, v, n);
-		Spectrum reflection = traceRay(world, gmtl::Rayf(collisionPoint + v_r * 0.01f, v_r), callDepth);
-
-
-		bool entering;
-		Vector3f T = transmittedDirection(entering, info.normal, info.ray.getDir(), mat);
-		Spectrum refraction = traceRay(world, gmtl::Rayf(collisionPoint + T * 0.01f, T), callDepth);
-
-		finalColor = mat->Ka_color.GetColor(info) * mat->Ka * 0.01f +
-					 mat->Kd.GetColor(info) * diffSum +
-					 mat->Ks.GetColor(info) * specSum +
-					 mat->Kr.GetColor(info) * reflection +
-					 mat->Kt.GetColor(info) * refraction;
-
+		
+		finalColor += directLight(world, collisionPoint, v, info);
 	}
 
 	callDepth--;

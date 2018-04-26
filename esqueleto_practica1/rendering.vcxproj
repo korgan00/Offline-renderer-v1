@@ -96,6 +96,7 @@ xcopy /y /s "$(ProjectDir)"bin\x64\Debug\$(ProjectName).dll .\bin</Command>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;GOOGLE_GLOG_DLL_DECL=;GLOG_NO_ABBREVIATED_SEVERITIES;NOMINMAX;PATHTRACER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>../rendering_lib/include/gmtl;./;../rendering_lib/include;./lights;./brdfs;../rendering_lib/include/glog</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
