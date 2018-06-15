@@ -1,0 +1,21 @@
+﻿  main.cpp
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(1198,5): warning MSB8012: TargetPath(O:\rendering\x64\Release\rendering.dll) does not match the Linker's OutputFile property value (C:\Users\gregorio.iniesta\Documents\repos\Offline-renderer-v1\esqueleto_practica1\bin\x64\Release\rendering.dll). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
+     Creating library ./deploy/x64/Release/rendering.lib and object ./deploy/x64/Release/rendering.exp
+  Generating code
+  3 of 2569 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+libglog_static.lib(logging.obj) : warning LNK4099: PDB 'libglog_static.pdb' was not found with 'libglog_static.lib(logging.obj)' or at 'O:\rendering\x64\Release\libglog_static.pdb'; linking object as if no debug info
+libglog_static.lib(vlog_is_on.obj) : warning LNK4099: PDB 'libglog_static.pdb' was not found with 'libglog_static.lib(vlog_is_on.obj)' or at 'O:\rendering\x64\Release\libglog_static.pdb'; linking object as if no debug info
+libglog_static.lib(raw_logging.obj) : warning LNK4099: PDB 'libglog_static.pdb' was not found with 'libglog_static.lib(raw_logging.obj)' or at 'O:\rendering\x64\Release\libglog_static.pdb'; linking object as if no debug info
+libglog_static.lib(utilities.obj) : warning LNK4099: PDB 'libglog_static.pdb' was not found with 'libglog_static.lib(utilities.obj)' or at 'O:\rendering\x64\Release\libglog_static.pdb'; linking object as if no debug info
+libglog_static.lib(port.obj) : warning LNK4099: PDB 'libglog_static.pdb' was not found with 'libglog_static.lib(port.obj)' or at 'O:\rendering\x64\Release\libglog_static.pdb'; linking object as if no debug info
+  rendering.vcxproj -> O:\rendering\x64\Release\rendering.dll
+  A subdirectory or file C:\Users\gregorio.iniesta\Documents\repos\Offline-renderer-v1\esqueleto_practica1\deploy already exists.
+  A subdirectory or file C:\Users\gregorio.iniesta\Documents\repos\Offline-renderer-v1\esqueleto_practica1\deploy\x64 already exists.
+  A subdirectory or file C:\Users\gregorio.iniesta\Documents\repos\Offline-renderer-v1\esqueleto_practica1\deploy\x64\Release already exists.
+  C:\Users\gregorio.iniesta\Documents\repos\Offline-renderer-v1\esqueleto_practica1\bin\x64\Release\rendering.dll
+  1 File(s) copied
+  C:\Users\gregorio.iniesta\Documents\repos\Offline-renderer-v1\esqueleto_practica1\bin\x64\Release\rendering.dll
+  1 File(s) copied

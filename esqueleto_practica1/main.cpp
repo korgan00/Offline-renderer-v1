@@ -147,6 +147,9 @@ void render_image(World* world, unsigned int dimX, unsigned int dimY, float* ima
 		{ accum++; }
 		printf("\r %f", (float)accum / dimY);
 	}
+
+	int i;
+	scanf("%d", &i);
 }
 
 unsigned int g_intersectTriangleCalls;
