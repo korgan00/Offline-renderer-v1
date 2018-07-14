@@ -19,10 +19,44 @@
 #include <main.h>
 
 
-
 int g_RenderMaxDepth = 12;
 
 extern int g_pixel_samples;
+
+#define RUSSIAN_ROULLETTE_PROC 0.2
+#define SAMPLES 25
+
+Spectrum traceRay(World* world, gmtl::Rayf currRay);
+
+int randomInt(int max) {
+    return rand() % max;
+}
+
+float randomFloat01() {
+    float n = static_cast<float>(rand());
+    return n / static_cast<float>(RAND_MAX);
+}
+
+gmtl::Point3f randomPoint3f() {
+    float r1 = randomFloat01();
+    float r2 = (randomFloat01() * 2) - 1;
+    float phi = 2 * M_PI * r1;
+    float m = sqrt(1.0f - (r2 * r2));
+
+    return gmtl::Point3f(cos(phi) * m, sin(phi) * m, r2);
+}
+gmtl::Vec3f randomVec3f() {
+    float r1 = randomFloat01();
+    float r2 = (randomFloat01() * 2) - 1;
+    float phi = 2 * M_PI * r1;
+    float m = sqrt(1.0f - (r2 * r2));
+
+    return gmtl::Vec3f(cos(phi) * m, sin(phi) * m, r2);
+}
+
+bool russianRoulletteCheck() {
+    return randomFloat01() <= RUSSIAN_ROULLETTE_PROC;
+}
 
 World* ReadFromFile(const char* filename)
 {
@@ -78,35 +112,57 @@ gmtl::Vec3f transmittedDirection(bool& entering, const gmtl::Vec3f& N, const gmt
 }
 
 Spectrum directLight(World* world, const Point3f& collisionPoint, const Vector3f& v, const IntersectInfo& info) {
-	std::vector<Light*>::iterator lightIt = world->mLights.begin();
+    int lightCount = world->mLights.size();
 
-	Spectrum directContribution;
-	while (lightIt != world->mLights.end()) {
-		Light* currLight = (*lightIt);
-		gmtl::Vec3f wi;
-		float pdf;
-		gmtl::Rayf visibilityRay;
-		IntersectInfo shadowInfo;
-		Vector3f n = info.normal;
-		gmtl::normalize(n);
+    if (lightCount == 0) return Spectrum();
 
-		Spectrum lightSpectrum = currLight->Sample(collisionPoint, wi, pdf, visibilityRay);
-		visibilityRay.setOrigin(visibilityRay.getOrigin() + visibilityRay.getDir() * 0.001f);
+    Light* currLight = *(world->mLights.begin() + randomInt(lightCount));
 
-		if (!world->shadow(visibilityRay)) {
-			directContribution += (info.material->BRDF(lightSpectrum, wi, v, info) * max(gmtl::dot(n, wi), 0.0f)) / pdf;
-		}
+    Spectrum directContribution;
+    gmtl::Vec3f wi;
+    float pdf;
+    gmtl::Rayf visibilityRay;
+    IntersectInfo shadowInfo;
+    Vector3f n = info.normal;
+    gmtl::normalize(n);
 
-		lightIt++;
-	}
+    Spectrum lightSpectrum = currLight->Sample(collisionPoint, wi, pdf, visibilityRay);
+    visibilityRay.setOrigin(visibilityRay.getOrigin() + visibilityRay.getDir() * 0.0001f);
 
-	return directContribution;
+    if (!world->shadow(visibilityRay)) {
+        directContribution = (info.material->BRDF(lightSpectrum, wi, v, info) * max(gmtl::dot(n, wi), 0.0f)) / pdf;
+    }
+
+    return directContribution * static_cast<float>(lightCount);
 }
 
-Spectrum traceRay(World* world, gmtl::Rayf currRay, int callDepth = 0) {
+Spectrum indirectLight(World* world, const Point3f& collisionPoint, const Vector3f& v, const IntersectInfo& info) {
+    Spectrum indirectContribution;
+    if (!russianRoulletteCheck()) return indirectContribution;
+
+    gmtl::Vec3f wi = randomVec3f();
+    gmtl::normalize(wi);
+    Vector3f n = info.normal;
+    gmtl::normalize(n);
+
+    if (gmtl::dot(n, wi) < 0) {
+        wi = -wi;
+    }
+
+    gmtl::Rayf ray = gmtl::Rayf(info.position + wi * 0.0001f, wi);
+    indirectContribution = traceRay(world, ray);
+
+    indirectContribution = info.material->BRDF(indirectContribution, wi, v, info);
+    indirectContribution *= max(gmtl::dot(n, wi), 0.0f);
+    indirectContribution *= 2.0f * M_PI; // pdf
+    indirectContribution /= RUSSIAN_ROULLETTE_PROC;
+
+    
+    return indirectContribution;
+}
+
+Spectrum traceRay(World* world, gmtl::Rayf currRay) {
 	Spectrum finalColor;
-	if (callDepth >= 5) return finalColor;
-	callDepth++;
 
 	IntersectInfo info;
 	world->intersect(info, currRay);
@@ -116,11 +172,10 @@ Spectrum traceRay(World* world, gmtl::Rayf currRay, int callDepth = 0) {
 		gmtl::normalize(v);
 		Vector3f n = info.normal;
 		gmtl::normalize(n);
-		
-		finalColor += directLight(world, collisionPoint, v, info);
+
+        finalColor = directLight(world, collisionPoint, v, info) + indirectLight(world, collisionPoint, v, info);
 	}
 
-	callDepth--;
 	return finalColor;
 }
 
@@ -133,23 +188,26 @@ void render_image(World* world, unsigned int dimX, unsigned int dimY, float* ima
 
 	Camera* c = world->getCamera();
 
-	unsigned int accum = 0;
-	#pragma omp parallel for schedule(dynamic)
+	static int accum = 0;
+	#pragma omp parallel for schedule(dynamic) 
 	for (int j = 0; j < (int)dimY; j++) {
 		gmtl::Rayf currRay;
 		for (unsigned int i = 0; i < dimX; i++) {
-			currRay = c->generateRay(static_cast<float>(i), static_cast<float>(j));
-			Spectrum finalColor = traceRay(world, currRay);
+            Spectrum finalColor;
+            for (unsigned int k = 0; k < SAMPLES; k++) {
+                currRay = c->generateRay(static_cast<float>(i), static_cast<float>(j));
+                finalColor += traceRay(world, currRay);
+            }
+            finalColor /= static_cast<float>(SAMPLES);
 			#pragma omp critical 
 			{ im(i, j, finalColor, 1.0f); }
 		}
-		#pragma omp critical
-		{ accum++; }
-		printf("\r %f", (float)accum / dimY);
+	    #pragma omp critical
+		{ 
+            accum++;
+		    printf("\r %f", (float)accum / dimY);
+        }
 	}
-
-	int i;
-	scanf("%d", &i);
 }
 
 unsigned int g_intersectTriangleCalls;
