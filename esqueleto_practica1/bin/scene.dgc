@@ -105,7 +105,7 @@ persp_camera
                		-0.100000 9.050320 -18.000000 1.000000
 }
 
-point_light
+area_light
 {
 	name |areaLight1|areaLightShape1
 	matrix

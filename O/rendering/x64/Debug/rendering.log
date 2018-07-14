@@ -1,11 +1,4 @@
 ﻿  main.cpp
-d:\desarrollo\offline-renderer-v1\rendering_lib\include\gmtl\gmtl\vecops.h(299): warning C4244: '/=': conversión de 'const double' a 'float'; posible pérdida de datos
-  d:\desarrollo\offline-renderer-v1\esqueleto_practica1\main.cpp(158): note: vea la referencia a la creación de instancias de plantilla de función 'gmtl::VecBase<DATA_TYPE,3,gmtl::meta::DefaultVecTag> &gmtl::operator /=<DATA_TYPE,3,double>(gmtl::VecBase<DATA_TYPE,3,gmtl::meta::DefaultVecTag> &,const SCALAR_TYPE &)' que se está compilando
-          with
-          [
-              DATA_TYPE=float,
-              SCALAR_TYPE=double
-          ]
 C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(1202,5): warning MSB8012: TargetPath(O:\rendering\x64\Debug\rendering.dll) no coincide con el valor de la propiedad OutputFile de Linker (D:\Desarrollo\Offline-renderer-v1\esqueleto_practica1\bin\x64\Debug\rendering.dll). Esto puede hacer que el proyecto no se compile correctamente. Para solucionar este problema, asegúrese de que los valores de propiedad $(OutDir), $(TargetName) y $(TargetExt) coinciden con el valor especificado en %(Link.OutputFile).
      Creando biblioteca ./deploy/x64/Debug/rendering.lib y objeto ./deploy/x64/Debug/rendering.exp
 libglog_static.lib(logging.obj) : warning LNK4099: no se encontr¾ PDB 'libglog_static.pdb' con 'libglog_static.lib(logging.obj)' o en 'O:\rendering\x64\Debug\libglog_static.pdb'; se vincularß el objeto sin tener en cuenta informaci¾n de depuraci¾n

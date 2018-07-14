@@ -6,6 +6,8 @@ o:\rendering\x64\release\point_light.obj
 o:\rendering\x64\release\area_light.obj
 o:\rendering\x64\release\camera.obj
 o:\rendering\x64\release\ass_parser.obj
+o:\rendering\x64\release\random_helpers.obj
+o:\rendering\x64\release\halton.obj
 d:\desarrollo\offline-renderer-v1\esqueleto_practica1\bin\x64\release\rendering.dll
 o:\rendering\x64\release\rendering.pdb
 d:\desarrollo\offline-renderer-v1\esqueleto_practica1\deploy\x64\release\rendering.lib
@@ -14,7 +16,6 @@ o:\rendering\x64\release\rendering.tlog\cl.command.1.tlog
 o:\rendering\x64\release\rendering.tlog\cl.read.1.tlog
 o:\rendering\x64\release\rendering.tlog\cl.write.1.tlog
 o:\rendering\x64\release\rendering.tlog\link.command.1.tlog
-o:\rendering\x64\release\rendering.tlog\link.delete.1.tlog
 o:\rendering\x64\release\rendering.tlog\link.read.1.tlog
 o:\rendering\x64\release\rendering.tlog\link.write.1.tlog
 o:\rendering\x64\release\rendering.tlog\rendering.write.1u.tlog

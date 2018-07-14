@@ -123,10 +123,12 @@ xcopy /y /s "$(ProjectDir)"bin\x64\Release\$(ProjectName).dll .\bin</Command>
   <ItemGroup>
     <ClCompile Include="ass_parser.cpp" />
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="halton.cpp" />
     <ClCompile Include="lights\area_light.cpp" />
     <ClCompile Include="lights\point_light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="maya\ma_writer.cpp" />
+    <ClCompile Include="random_helpers.cpp" />
     <ClCompile Include="reporter.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -185,8 +187,10 @@ xcopy /y /s "$(ProjectDir)"bin\x64\Release\$(ProjectName).dll .\bin</Command>
     <ClInclude Include="brdfs\blinnphong.h" />
     <ClInclude Include="brdfs\lambert.h" />
     <ClInclude Include="brdfs\standard.h" />
+    <ClInclude Include="halton.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="maya\ma_writer.h" />
+    <ClInclude Include="random_helpers.h" />
     <ClInclude Include="reporter.h" />
   </ItemGroup>
   <ItemGroup>
