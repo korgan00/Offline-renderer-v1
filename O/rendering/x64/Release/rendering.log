@@ -1,10 +1,10 @@
-﻿  ass_parser.cpp
+﻿  main.cpp
 C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(1202,5): warning MSB8012: TargetPath(O:\rendering\x64\Release\rendering.dll) no coincide con el valor de la propiedad OutputFile de Linker (D:\Desarrollo\Offline-renderer-v1\esqueleto_practica1\bin\x64\Release\rendering.dll). Esto puede hacer que el proyecto no se compile correctamente. Para solucionar este problema, asegúrese de que los valores de propiedad $(OutDir), $(TargetName) y $(TargetExt) coinciden con el valor especificado en %(Link.OutputFile).
      Creando biblioteca ./deploy/x64/Release/rendering.lib y objeto ./deploy/x64/Release/rendering.exp
   Generando código
-  5 of 2699 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
+  2 of 2717 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    4 functions had inline decision re-evaluated but remain unchanged
+    1 functions had inline decision re-evaluated but remain unchanged
   Generación de código finalizada
 ass_parser.obj : warning LNK4020: un registro de tipo de 'o:\rendering\x64\release\vc141.pdb' está dañado; puede que algunos símbolos y tipos no sean accesibles desde el depurador
 camera.obj : warning LNK4020: un registro de tipo de 'o:\rendering\x64\release\vc141.pdb' está dañado; puede que algunos símbolos y tipos no sean accesibles desde el depurador

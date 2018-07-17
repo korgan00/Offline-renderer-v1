@@ -11,7 +11,7 @@ float randomFloat01() {
 }
 
 gmtl::Point3f randomPoint3f() {
-    gmtl::Point2f r = halton2D(randomInt(100), HALTON_SEED_X, HALTON_SEED_Y);
+    gmtl::Point2f r = halton2D(randomInt(10000), HALTON_SEED_X, HALTON_SEED_Y);
 
     float r1 = r[0];
     float r2 = (r[1] * 2) - 1;
@@ -22,7 +22,7 @@ gmtl::Point3f randomPoint3f() {
 }
 
 gmtl::Vec3f randomVec3f() {
-    gmtl::Point2f r = halton2D(randomInt(100), HALTON_SEED_X, HALTON_SEED_Y);
+    gmtl::Point2f r = halton2D(randomInt(10000), HALTON_SEED_X, HALTON_SEED_Y);
 
     float r1 = r[0];
     float r2 = (r[1] * 2) - 1;

@@ -24,8 +24,10 @@ int g_RenderMaxDepth = 12;
 
 extern int g_pixel_samples;
 
-#define SAMPLES 25
+#define SAMPLES 100
 #define INDIRECT_LIGHT_ON true
+#define TRUNCATE_FINAL_SPECTRUM_PER_SAMPLE true
+#define TRUNCATE_MAX_VALUE (SAMPLES/2.0f)
 
 Spectrum traceRay(World* world, gmtl::Rayf currRay);
 
@@ -78,11 +80,15 @@ Spectrum indirectLight(World* world, const Point3f& collisionPoint, const Vector
     Vector3f n = info.normal;
     gmtl::normalize(n);
 
-    if (gmtl::dot(n, wi) < 0) {
+    while (gmtl::dot(n, wi) < 0.0001f) {
         wi = -wi;
+        if (gmtl::dot(n, wi) < 0.0001f) {
+            wi = randomVec3f();
+            gmtl::normalize(wi);
+        }
     }
 
-    gmtl::Rayf ray = gmtl::Rayf(info.position + wi * 0.0001f, wi);
+    gmtl::Rayf ray = gmtl::Rayf(info.position + wi * 0.001f, wi);
     indirectContribution = traceRay(world, ray);
 
     indirectContribution = info.material->BRDF(indirectContribution, wi, v, info);
@@ -124,20 +130,31 @@ void render_image(World* world, unsigned int dimX, unsigned int dimY, float* ima
 	#pragma omp parallel for schedule(dynamic) 
 	for (int j = 0; j < (int)dimY; j++) {
 		gmtl::Rayf currRay;
+        #pragma omp critical
+        { 
+            accum++;
+            srand(accum);
+        }
 		for (unsigned int i = 0; i < dimX; i++) {
             Spectrum finalColor;
             for (unsigned int k = 0; k < SAMPLES; k++) {
                 gmtl::Point2f pixelOffset = halton2D(k, HALTON_SEED_X, HALTON_SEED_Y);
                 currRay = c->generateRay(static_cast<float>(i) + pixelOffset[0], static_cast<float>(j) + pixelOffset[1]);
-                finalColor += traceRay(world, currRay);
+                Spectrum raytraced = traceRay(world, currRay);
+#if TRUNCATE_FINAL_SPECTRUM_PER_SAMPLE
+                float l = gmtl::length(raytraced);
+                if (l > static_cast<float>(TRUNCATE_MAX_VALUE)) {
+                    raytraced = (raytraced / l) * static_cast<float>(TRUNCATE_MAX_VALUE);
+                }
+#endif
+                finalColor += raytraced;
             }
-            finalColor /= static_cast<float>(SAMPLES);
+            finalColor = finalColor / static_cast<float>(SAMPLES);
 			#pragma omp critical 
 			{ im(i, j, finalColor, 1.0f); }
 		}
 	    #pragma omp critical
-		{ 
-            accum++;
+		{
 		    printf("\r %f", (float)accum / dimY);
         }
 	}

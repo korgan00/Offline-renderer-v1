@@ -1,4 +1,9 @@
-﻿  main.cpp
+﻿  ass_parser.cpp
+  camera.cpp
+  area_light.cpp
+  main.cpp
+  random_helpers.cpp
+  Generando código...
 C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(1202,5): warning MSB8012: TargetPath(O:\rendering\x64\Debug\rendering.dll) no coincide con el valor de la propiedad OutputFile de Linker (D:\Desarrollo\Offline-renderer-v1\esqueleto_practica1\bin\x64\Debug\rendering.dll). Esto puede hacer que el proyecto no se compile correctamente. Para solucionar este problema, asegúrese de que los valores de propiedad $(OutDir), $(TargetName) y $(TargetExt) coinciden con el valor especificado en %(Link.OutputFile).
      Creando biblioteca ./deploy/x64/Debug/rendering.lib y objeto ./deploy/x64/Debug/rendering.exp
 libglog_static.lib(logging.obj) : warning LNK4099: no se encontr¾ PDB 'libglog_static.pdb' con 'libglog_static.lib(logging.obj)' o en 'O:\rendering\x64\Debug\libglog_static.pdb'; se vincularß el objeto sin tener en cuenta informaci¾n de depuraci¾n

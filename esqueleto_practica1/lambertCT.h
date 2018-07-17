@@ -16,7 +16,10 @@ public:
     CookTorrance cookTorrance;
 
     virtual Spectrum BRDF(const Spectrum& Li, const gmtl::Vec3f& L, const gmtl::Vec3f& V, const IntersectInfo& info) const {
-        return lambert.BRDF(Li, L, V, info);
+        gmtl::Vec3f N = info.normal;
+        gmtl::Vec3f H = (L + V) / 2.0f;
+        float F = powf(1.0f - max(gmtl::dot(L, H), 0.0f), 5.0f);
+        return (1.0f - F) * lambert.BRDF(Li, L, V, info) + cookTorrance.BRDF(Li, L, V, info);
     }
     virtual bool Sample(gmtl::Vec3f& wi, float& pdf, const IntersectInfo& info) const {
 
