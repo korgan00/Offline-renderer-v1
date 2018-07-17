@@ -1,4 +1,5 @@
 #include <camera.h>
+#include "random_helpers.h"
 
 gmtl::Rayf Camera::generateRay(float pixelX, float pixelY) {
 	gmtl::Point3f wPoint = mCameraToWorld(mRasterToCamera(gmtl::Point3f(pixelX, pixelY, 0)));

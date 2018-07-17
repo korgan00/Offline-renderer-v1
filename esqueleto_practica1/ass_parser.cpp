@@ -3,6 +3,8 @@
 #include <world.h>
 
 #include <lambert.h>
+#include <lambertCT.h>
+#include <cooktorrance.h>
 #include <standard.h>
 #include <blinn.h>
 #include <blinnphong.h>
@@ -370,6 +372,116 @@ bool ReadAssAiStandardBlock(TextParser& parser, World* the_world)
 	return true;
 }
 
+bool ReadAssCookTorranceBlock(TextParser& parser, World* the_world) {
+    string mat_name;
+    Spectrum KsColor(0.5f);
+    string Ks_name;
+    float roughness = 1.0f;
+
+    bool success = false;
+    string sToken;
+    while (!parser.Eof()) {
+        success = parser.GetToken(sToken);
+        if (success) {
+            if (sToken == "NAME") {
+                parser.GetToken(mat_name);
+            } else if (sToken == "ROUGHNESS") {
+                roughness = parser.GetNumber();
+            } else if (sToken == "KS_COLOR") {
+                float rgb[3];
+                if (parser.IsNextNumber()) {
+                    parser.GetPoint3(rgb[0], rgb[1], rgb[2]);
+                    KsColor = Spectrum(rgb);
+                } else {
+                    parser.GetToken(Ks_name);
+                }
+            } else if (sToken == "}") {
+                break;
+            } else {
+                parser.SkipLine();
+            }
+        }
+    }
+
+    Color ks_color;
+    if (Ks_name.empty()) {
+        ks_color = Color(KsColor);
+    } else {
+        ks_color = Color(Ks_name.c_str(), Spectrum(roughness));
+    }
+
+    CookTorrance* mat = new CookTorrance(mat_name.c_str(), roughness, ks_color);
+    the_world->addMaterial(mat);
+
+    return true;
+}
+
+
+bool ReadAssLambertCookTorranceBlock(TextParser& parser, World* the_world) {
+    string mat_name;
+
+    string Ks_name;
+    Spectrum KsColor(0.5f);
+    float roughness = 1.0f;
+
+    string Kd_name;
+    Spectrum KdColor(0.5f);
+    float kd = 1.0f;
+
+    bool success = false;
+    string sToken;
+    while (!parser.Eof()) {
+        success = parser.GetToken(sToken);
+        if (success) {
+            if (sToken == "NAME") {
+                parser.GetToken(mat_name);
+            } else if (sToken == "ROUGHNESS") {
+                roughness = parser.GetNumber();
+            } else if (sToken == "KS_COLOR") {
+                float rgb[3];
+                if (parser.IsNextNumber()) {
+                    parser.GetPoint3(rgb[0], rgb[1], rgb[2]);
+                    KsColor = Spectrum(rgb);
+                } else {
+                    parser.GetToken(Ks_name);
+                }
+            } else if (sToken == "KD") {
+                kd = parser.GetNumber();
+            } else if (sToken == "KD_COLOR") {
+                float rgb[3];
+                if (parser.IsNextNumber()) {
+                    parser.GetPoint3(rgb[0], rgb[1], rgb[2]);
+                    KdColor = Spectrum(rgb);
+                } else {
+                    parser.GetToken(Kd_name);
+                }
+            } else if (sToken == "}") {
+                break;
+            } else {
+                parser.SkipLine();
+            }
+        }
+    }
+
+    Color ks_color;
+    if (Ks_name.empty()) {
+        ks_color = Color(KsColor);
+    } else {
+        ks_color = Color(Ks_name.c_str(), Spectrum(roughness));
+    }
+    Color kd_color;
+    if (Kd_name.empty()) {
+        kd_color = Color(KdColor);
+    } else {
+        kd_color = Color(Kd_name.c_str(), Spectrum(kd));
+    }
+
+    LambertCT* mat = new LambertCT(mat_name.c_str(), kd, kd_color, roughness, ks_color);
+    the_world->addMaterial(mat);
+
+    return true;
+}
+
 bool CustomReadAssBlock(const string& sToken, TextParser& parser, World* the_world)
 {
 	if (sToken == "LAMBERT")
@@ -386,7 +498,17 @@ bool CustomReadAssBlock(const string& sToken, TextParser& parser, World* the_wor
 	{
 		ReadAssBlinn(parser, the_world);
 		return true;
-	}
+	} 
+    else if (sToken == "COOKTORRANCE") 
+    {
+        ReadAssCookTorranceBlock(parser, the_world);
+        return true;
+    } 
+    else if (sToken == "LAMBERTCT") 
+    {
+        ReadAssLambertCookTorranceBlock(parser, the_world);
+        return true;
+    }
 	else
 	{
 		return false;

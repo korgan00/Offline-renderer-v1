@@ -250,6 +250,12 @@
     <ClInclude Include="random_helpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="cooktorrance.h">
+      <Filter>Source Files\brdfs</Filter>
+    </ClInclude>
+    <ClInclude Include="lambertCT.h">
+      <Filter>Source Files\brdfs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="maya\maya_helper.py">

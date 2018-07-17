@@ -17,14 +17,15 @@
 
 #include <main.h>
 
-#define RUSSIAN_ROULLETTE_PROC 0.5f
+#define RUSSIAN_ROULLETTE_PROC 1.0f
 #include "random_helpers.h"
 
 int g_RenderMaxDepth = 12;
 
 extern int g_pixel_samples;
 
-#define SAMPLES 5
+#define SAMPLES 25
+#define INDIRECT_LIGHT_ON true
 
 Spectrum traceRay(World* world, gmtl::Rayf currRay);
 
@@ -68,6 +69,8 @@ Spectrum directLight(World* world, const Point3f& collisionPoint, const Vector3f
 
 Spectrum indirectLight(World* world, const Point3f& collisionPoint, const Vector3f& v, const IntersectInfo& info) {
     Spectrum indirectContribution;
+
+#if INDIRECT_LIGHT_ON
     if (!russianRoulletteCheck()) return indirectContribution;
 
     gmtl::Vec3f wi = randomVec3f();
@@ -86,8 +89,8 @@ Spectrum indirectLight(World* world, const Point3f& collisionPoint, const Vector
     indirectContribution *= max(gmtl::dot(n, wi), 0.0f);
     indirectContribution *= 2.0f * M_PI; // pdf
     indirectContribution /= RUSSIAN_ROULLETTE_PROC;
+#endif
 
-    
     return indirectContribution;
 }
 
@@ -138,6 +141,7 @@ void render_image(World* world, unsigned int dimX, unsigned int dimY, float* ima
 		    printf("\r %f", (float)accum / dimY);
         }
 	}
+    printf("\n");
 }
 
 unsigned int g_intersectTriangleCalls;

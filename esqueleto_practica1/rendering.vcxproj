@@ -187,7 +187,9 @@ xcopy /y /s "$(ProjectDir)"bin\x64\Release\$(ProjectName).dll .\bin</Command>
     <ClInclude Include="brdfs\blinnphong.h" />
     <ClInclude Include="brdfs\lambert.h" />
     <ClInclude Include="brdfs\standard.h" />
+    <ClInclude Include="cooktorrance.h" />
     <ClInclude Include="halton.h" />
+    <ClInclude Include="lambertCT.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="maya\ma_writer.h" />
     <ClInclude Include="random_helpers.h" />
