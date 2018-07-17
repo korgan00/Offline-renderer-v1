@@ -6,10 +6,10 @@
 
 class CookTorrance : public Material {
 public:
-    CookTorrance(const char* name) : Material(name), Ks_color(0.0f), roughness(1.0f) {}
-    CookTorrance(const char* name, float rough, const Color& ks_color) : Material(name), roughness(rough), Ks_color(ks_color) {}
+    CookTorrance(const char* name) : Material(name), Ks_color(0.0f), metalness(1.0f) {}
+    CookTorrance(const char* name, float metal, const Color& ks_color) : Material(name), metalness(metal), Ks_color(ks_color) {}
 
-    float roughness;
+    float metalness;
     Color Ks_color;
 
 
@@ -18,7 +18,6 @@ public:
         gmtl::Vec3f N = info.normal;
         Spectrum FGD = Fresnel(L, H, info) * GeometricFactor(L, V, H, info) * BeckmannDistribution(H, info);
         Spectrum cookTorranceSpectrum = FGD / (4.0f * gmtl::dot(N, L) * gmtl::dot(N, V));
-        //cookTorranceSpectrum = Spectrum(min(cookTorranceSpectrum[0], 1.0f), min(cookTorranceSpectrum[1], 1.0f), min(cookTorranceSpectrum[2], 1.0f));
         return cookTorranceSpectrum * Li;
     }
 
@@ -44,9 +43,9 @@ public:
         float NdotH = max(gmtl::dot(info.normal, H), 0.0001f);
         float cos2Alpha = NdotH * NdotH;
         float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;
-        float roughness2 = roughness * roughness;
-        float denom = M_PI * roughness2 * cos2Alpha * cos2Alpha;
-        return exp(tan2Alpha / roughness2) / denom;
+        float metalness2 = metalness * metalness;
+        float denom = M_PI * metalness2 * cos2Alpha * cos2Alpha;
+        return exp(tan2Alpha / metalness2) / denom;
     }
     float GeometricFactor(const gmtl::Vec3f& L, const gmtl::Vec3f& V, const gmtl::Vec3f& H, const IntersectInfo& info) const {
         gmtl::Vec3f N = info.normal;

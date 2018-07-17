@@ -9,8 +9,8 @@
 class LambertCT : public Material {
 public:
     LambertCT(const char* name) : Material(name), lambert(name, 0.0f, 1.0f), cookTorrance(name, 1.0f, 0.0f) {}
-    LambertCT(const char* name, float kd, const Color& kd_color, float rough, const Color& ks_color) :
-        Material(name), lambert(name, kd, kd_color), cookTorrance(name, rough, ks_color) {}
+    LambertCT(const char* name, float kd, const Color& kd_color, float metal, const Color& ks_color) :
+        Material(name), lambert(name, kd, kd_color), cookTorrance(name, metal, ks_color) {}
 
     Lambert lambert;
     CookTorrance cookTorrance;

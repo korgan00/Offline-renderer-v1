@@ -376,7 +376,7 @@ bool ReadAssCookTorranceBlock(TextParser& parser, World* the_world) {
     string mat_name;
     Spectrum KsColor(0.5f);
     string Ks_name;
-    float roughness = 1.0f;
+    float metalness = 1.0f;
 
     bool success = false;
     string sToken;
@@ -385,8 +385,8 @@ bool ReadAssCookTorranceBlock(TextParser& parser, World* the_world) {
         if (success) {
             if (sToken == "NAME") {
                 parser.GetToken(mat_name);
-            } else if (sToken == "ROUGHNESS") {
-                roughness = parser.GetNumber();
+            } else if (sToken == "METALNESS") {
+                metalness = parser.GetNumber();
             } else if (sToken == "KS_COLOR") {
                 float rgb[3];
                 if (parser.IsNextNumber()) {
@@ -407,10 +407,10 @@ bool ReadAssCookTorranceBlock(TextParser& parser, World* the_world) {
     if (Ks_name.empty()) {
         ks_color = Color(KsColor);
     } else {
-        ks_color = Color(Ks_name.c_str(), Spectrum(roughness));
+        ks_color = Color(Ks_name.c_str(), Spectrum(metalness));
     }
 
-    CookTorrance* mat = new CookTorrance(mat_name.c_str(), roughness, ks_color);
+    CookTorrance* mat = new CookTorrance(mat_name.c_str(), metalness, ks_color);
     the_world->addMaterial(mat);
 
     return true;
@@ -422,7 +422,7 @@ bool ReadAssLambertCookTorranceBlock(TextParser& parser, World* the_world) {
 
     string Ks_name;
     Spectrum KsColor(0.5f);
-    float roughness = 1.0f;
+    float metalness = 1.0f;
 
     string Kd_name;
     Spectrum KdColor(0.5f);
@@ -435,8 +435,8 @@ bool ReadAssLambertCookTorranceBlock(TextParser& parser, World* the_world) {
         if (success) {
             if (sToken == "NAME") {
                 parser.GetToken(mat_name);
-            } else if (sToken == "ROUGHNESS") {
-                roughness = parser.GetNumber();
+            } else if (sToken == "METALNESS") {
+                metalness = parser.GetNumber();
             } else if (sToken == "KS_COLOR") {
                 float rgb[3];
                 if (parser.IsNextNumber()) {
@@ -467,7 +467,7 @@ bool ReadAssLambertCookTorranceBlock(TextParser& parser, World* the_world) {
     if (Ks_name.empty()) {
         ks_color = Color(KsColor);
     } else {
-        ks_color = Color(Ks_name.c_str(), Spectrum(roughness));
+        ks_color = Color(Ks_name.c_str(), Spectrum(metalness));
     }
     Color kd_color;
     if (Kd_name.empty()) {
@@ -476,7 +476,7 @@ bool ReadAssLambertCookTorranceBlock(TextParser& parser, World* the_world) {
         kd_color = Color(Kd_name.c_str(), Spectrum(kd));
     }
 
-    LambertCT* mat = new LambertCT(mat_name.c_str(), kd, kd_color, roughness, ks_color);
+    LambertCT* mat = new LambertCT(mat_name.c_str(), kd, kd_color, metalness, ks_color);
     the_world->addMaterial(mat);
 
     return true;

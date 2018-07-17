@@ -359,42 +359,42 @@ lambert
 cooktorrance
 {
 	name cooktorranceIron
-	Roughness 1.500000
+	Metalness 1.500000
 	Ks_color 0.56 0.57 0.58
 }
 
 cooktorrance
 {
 	name cooktorranceSilver
-	Roughness 3.000000
+	Metalness 3.000000
 	Ks_color 0.95 0.93 0.88
 }
 
 cooktorrance
 {
 	name cooktorranceAluminium
-	Roughness 300.000000
+	Metalness 300.000000
 	Ks_color 0.91 0.92 0.92
 }
 
 cooktorrance
 {
 	name cooktorranceGold
-	Roughness 10.000000
+	Metalness 10.000000
 	Ks_color 1.000 0.71 0.29
 }
 
 cooktorrance
 {
 	name cooktorranceCopper
-	Roughness 10.000000
+	Metalness 10.000000
 	Ks_color 0.95 0.64 0.54
 }
 
 lambertct
 {
 	name lambertctIron
-	Roughness 1.500000
+	Metalness 1.500000
 	Ks_color 0.56 0.57 0.58
 	Kd 0.800000
 	Kd_color 0.56 0.57 0.58
@@ -403,7 +403,7 @@ lambertct
 lambertct
 {
 	name lambertctSilver
-	Roughness 3.000000
+	Metalness 3.000000
 	Ks_color 0.95 0.93 0.88
 	Kd 0.800000
 	Kd_color 0.95 0.93 0.88
@@ -412,7 +412,7 @@ lambertct
 lambertct
 {
 	name lambertctAluminium
-	Roughness 30.000000
+	Metalness 30.000000
 	Ks_color 0.91 0.92 0.92
 	Kd 0.800000
 	Kd_color 0.91 0.92 0.92
@@ -421,7 +421,7 @@ lambertct
 lambertct
 {
 	name lambertctGold
-	Roughness 10.000000
+	Metalness 10.000000
 	Ks_color 1.000 0.71 0.29
 	Kd 0.800000
 	Kd_color 1.000 0.71 0.29
@@ -430,7 +430,7 @@ lambertct
 lambertct
 {
 	name lambertctCopper
-	Roughness 10.000000
+	Metalness 10.000000
 	Ks_color 0.95 0.64 0.54
 	Kd 0.800000
 	Kd_color 0.95 0.64 0.54
