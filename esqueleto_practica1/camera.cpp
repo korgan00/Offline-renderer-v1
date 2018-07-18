@@ -17,7 +17,6 @@ gmtl::Rayf Camera::generateRay(float pixelX, float pixelY) {
         gmtl::Vec3f vec = (gmtl::Vec3f)(focusPoint - wPoint);
         gmtl::normalize(vec);
         gmtl::Point3f newCamPos = focusPoint - (vec * _focusDistance);
-        gmtl::Vec3f camPosDist = newCamPos - wCamPos;
         
         return gmtl::Rayf(focusPoint - (vec * _focusDistance), vec);
     } else {
