@@ -1,4 +1,6 @@
 //#include <tbb/tbb.h>
+#define RUSSIAN_ROULLETTE_PROC 1.0f
+
 #include <stdio.h>
 #include <math.h>
 #include <gmtl/gmtl.h>
@@ -17,14 +19,13 @@
 
 #include <main.h>
 
-#define RUSSIAN_ROULLETTE_PROC 1.0f
 #include "random_helpers.h"
 
 int g_RenderMaxDepth = 12;
 
 extern int g_pixel_samples;
 
-#define SAMPLES 100
+#define SAMPLES 2000
 #define INDIRECT_LIGHT_ON true
 #define TRUNCATE_FINAL_SPECTRUM_PER_SAMPLE true
 #define TRUNCATE_MAX_VALUE (SAMPLES/2.0f)
@@ -125,21 +126,23 @@ void render_image(World* world, unsigned int dimX, unsigned int dimY, float* ima
 						  alpha[y * dimX + x] = a;
 
 	Camera* c = world->getCamera();
+    c->useDof(true);
+    c->setDofFocusDistance(29.0f);
+    c->setDofPower(2.0f);
 
 	static int accum = 0;
 	#pragma omp parallel for schedule(dynamic) 
 	for (int j = 0; j < (int)dimY; j++) {
 		gmtl::Rayf currRay;
         #pragma omp critical
-        { 
+        {
             accum++;
             srand(accum);
         }
 		for (unsigned int i = 0; i < dimX; i++) {
             Spectrum finalColor;
             for (unsigned int k = 0; k < SAMPLES; k++) {
-                gmtl::Point2f pixelOffset = halton2D(k, HALTON_SEED_X, HALTON_SEED_Y);
-                currRay = c->generateRay(static_cast<float>(i) + pixelOffset[0], static_cast<float>(j) + pixelOffset[1]);
+                currRay = c->generateRay(static_cast<float>(i), static_cast<float>(j));
                 Spectrum raytraced = traceRay(world, currRay);
 #if TRUNCATE_FINAL_SPECTRUM_PER_SAMPLE
                 float l = gmtl::length(raytraced);

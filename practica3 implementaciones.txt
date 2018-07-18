@@ -1,0 +1,15 @@
+Para el proyecto de ampliación he implementado el sistema de microfacetas basado en las transparencias del blackboard "Cook Torrance".
+
+He desarrollado dos materiales, el primero es la implementación de las microfacetas de manera pura y el segundo material es un lambert-cooktorrance que utiliza lambert para la iluminación difusa y cooktorrance para el especular.
+He modificado tambien el lector de materiales para adaptarse a estos nuevos materiales.
+el material de microfacetas he decidido implementarlo con la ecuación de distribución de beckmann y el termino geometrico con la ecuación de Cook-Torrance;
+
+Además de estos dos materiales, el bucle de renderizado utiliza multisampling para eliminar dientes de sierra y obtener imagenes con menos ruido.
+Debido a cooktorrance el ruido en la imágen a aumentado considerablemente, por lo que he decidido complementar el multisampling con una funcionalidad (activable por constante) que trunca los samples finales demasiado luminosos para evitar que un sample sobrexpuesto contamine los demás (este valor de truncamiento tambien es controlable por constante).
+He visto que esta es una funcionalidad que algunos motores de render como blender utilizan para reducir el ruido.
+
+Por último he querido implementar una profundidad de campo de manera "natural" es decir, que dependiera únicamente de la cámara, para ello he metido 3 parametros en la cámara (DOF activado, distancia focal y potencia del desenfoque) para manejar el foco. Estos tres parametros son utilizados para generar los rayos desde la cámara.
+
+
+Para visualizarlo he llenado la escena de esferas con diferentes configuraciones metalicas que se pueden ver en el archivo de escena, el suelo tambien es metalico y el resto de superficies son lambert puras.
+Dentro de la carpeta bin he dejado unas cuantas imagenes jpg con diferentes puntos del desarrollo, siendo las que empiezan por Final, las imágenes obtenidas con la práctica terminada.

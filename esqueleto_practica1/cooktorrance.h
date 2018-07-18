@@ -42,10 +42,10 @@ public:
     float BeckmannDistribution(const gmtl::Vec3f& H, const IntersectInfo& info) const {
         float NdotH = max(gmtl::dot(info.normal, H), 0.0001f);
         float cos2Alpha = NdotH * NdotH;
-        float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;
         float metalness2 = metalness * metalness;
+        float exponent = (cos2Alpha - 1.0) / (cos2Alpha * metalness2);
         float denom = M_PI * metalness2 * cos2Alpha * cos2Alpha;
-        return exp(tan2Alpha / metalness2) / denom;
+        return exp(exponent) / denom;
     }
     float GeometricFactor(const gmtl::Vec3f& L, const gmtl::Vec3f& V, const gmtl::Vec3f& H, const IntersectInfo& info) const {
         gmtl::Vec3f N = info.normal;
